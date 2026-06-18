@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Remigrazione — Fabio Bisesti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:       #0e0c0a;
+    --paper:     #f0ebe2;
+    --paper-mid: #d9d0c0;
+    --rust:      #b86a2e;
+    --rust-dim:  #7a4520;
+    --dust:      #6b6355;
+    --chapter-bg:#1a1612;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Lora', Georgia, serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── TOP NAVIGATION BAR ── */
+  .topbar {
+    background: rgba(14,12,10,0.92);
+    border-bottom: 1px solid rgba(184,106,46,0.25);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    height: 48px;
+  }
+  .topbar-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--dust);
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .topbar-back:hover { color: var(--rust); }
+  .topbar-back svg { opacity: 0.7; }
+  .topbar-divider {
+    margin: 0 1.2rem;
+    width: 1px;
+    height: 16px;
+    background: rgba(184,106,46,0.25);
+  }
+  .topbar-site {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    color: rgba(240,235,226,0.35);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: calc(100vh - 48px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-cover-side {
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-cover-side img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+    filter: brightness(0.78) sepia(0.18);
+    transition: filter 0.6s ease;
+  }
+  .hero-cover-side:hover img { filter: brightness(0.88) sepia(0.1); }
+  .hero-cover-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, transparent 60%, var(--ink) 100%);
+    pointer-events: none;
+  }
+
+  .hero-text-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5rem 5rem 5rem 4rem;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 1.2rem;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.2rem, 6vw, 5.5rem);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    color: var(--paper);
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1rem, 1.8vw, 1.4rem);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--dust);
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-epigraph {
+    border-left: 2px solid var(--rust-dim);
+    padding-left: 1.2rem;
+    margin-bottom: 2.8rem;
+    max-width: 380px;
+  }
+  .hero-epigraph p {
+    font-family: 'Lora', serif;
+    font-size: 0.88rem;
+    font-style: italic;
+    color: rgba(240,235,226,0.6);
+    line-height: 1.7;
+  }
+  .hero-epigraph cite {
+    display: block;
+    margin-top: 0.5rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-style: normal;
+    color: var(--rust);
+    letter-spacing: 0.08em;
+  }
+
+  .hero-meta {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    color: var(--dust);
+    letter-spacing: 0.04em;
+    margin-bottom: 2.5rem;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .hero-meta span { display: flex; align-items: center; gap: 0.4rem; }
+
+  .hero-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    max-width: 320px;
+  }
+
+  /* ── BUTTONS ── */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.9rem 2rem;
+    background: var(--rust);
+    color: var(--paper);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover { background: #d07b38; transform: translateY(-1px); }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.85rem 2rem;
+    background: transparent;
+    color: var(--dust);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid rgba(107,99,85,0.5);
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .btn-secondary:hover { color: var(--paper); border-color: var(--rust-dim); }
+
+  /* ── PREFACE STRIP ── */
+  .preface-section {
+    background: var(--paper);
+    color: var(--ink);
+    padding: 6rem 0;
+  }
+  .preface-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  .section-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 2rem;
+  }
+  .preface-text {
+    font-family: 'Lora', serif;
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: #2a2318;
+  }
+  .preface-text p { margin-bottom: 1.4em; }
+  .preface-text p:last-child { margin-bottom: 0; }
+  .preface-text em { font-style: italic; }
+
+  .preface-signature {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--paper-mid);
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--rust-dim);
+  }
+
+  /* ── CHAPTERS — departure board aesthetic ── */
+  .chapters-section {
+    background: var(--chapter-bg);
+    padding: 5rem 0;
+    overflow: hidden;
+  }
+  .chapters-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  .chapters-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid rgba(184,106,46,0.2);
+    padding-bottom: 1rem;
+  }
+  .chapters-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--paper);
+  }
+  .chapters-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    color: var(--dust);
+    letter-spacing: 0.1em;
+  }
+
+  .chapter-row {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr auto;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(107,99,85,0.2);
+    transition: background 0.15s;
+    position: relative;
+  }
+  .chapter-row:last-child { border-bottom: none; }
+
+  .chapter-num {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--rust);
+    letter-spacing: 0.08em;
+    text-align: right;
+  }
+  .chapter-name {
+    font-family: 'Lora', serif;
+    font-size: 0.96rem;
+    color: rgba(240,235,226,0.82);
+    line-height: 1.4;
+  }
+  .chapter-name em {
+    display: block;
+    font-style: italic;
+    font-size: 0.82rem;
+    color: var(--dust);
+    margin-top: 0.15rem;
+  }
+  .chapter-page {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    color: rgba(107,99,85,0.6);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+
+  /* Epilogue row styled differently */
+  .chapter-row.epilogue .chapter-name { font-style: italic; color: var(--rust); }
+  .chapter-row.epilogue .chapter-num { color: var(--dust); }
+
+  /* ── AUTHOR + THEME SECTION ── */
+  .author-section {
+    background: var(--ink);
+    padding: 6rem 0;
+    border-top: 1px solid rgba(184,106,46,0.15);
+  }
+  .author-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+  }
+  .theme-block h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--paper);
+    margin-bottom: 1.2rem;
+    line-height: 1.2;
+  }
+  .theme-block p {
+    font-family: 'Lora', serif;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: rgba(240,235,226,0.65);
+    margin-bottom: 1em;
+  }
+  .theme-law {
+    margin-top: 2rem;
+    padding: 1.2rem 1.4rem;
+    border: 1px solid rgba(184,106,46,0.3);
+    background: rgba(184,106,46,0.04);
+  }
+  .theme-law p {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: rgba(240,235,226,0.55);
+    margin: 0;
+    line-height: 1.6;
+  }
+  .theme-law cite {
+    display: block;
+    margin-top: 0.6rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-style: normal;
+    color: var(--rust);
+    letter-spacing: 0.12em;
+  }
+
+  .author-block .section-label { margin-bottom: 1.2rem; }
+  .author-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--paper);
+    margin-bottom: 0.3rem;
+  }
+  .author-location {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    color: var(--rust);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1.4rem;
+  }
+  .author-bio {
+    font-family: 'Lora', serif;
+    font-size: 0.92rem;
+    line-height: 1.8;
+    color: rgba(240,235,226,0.6);
+    margin-bottom: 1em;
+  }
+  .author-links {
+    margin-top: 1.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+  .author-link {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.76rem;
+    color: var(--dust);
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.2s;
+  }
+  .author-link:hover { color: var(--rust); }
+  .author-link::before {
+    content: '→';
+    color: var(--rust-dim);
+    font-size: 0.8rem;
+  }
+
+  /* ── LICENSE FOOTER ── */
+  .footer {
+    background: #080705;
+    border-top: 1px solid rgba(107,99,85,0.2);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  .footer p {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    color: rgba(107,99,85,0.55);
+    line-height: 1.8;
+    letter-spacing: 0.03em;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .footer a { color: rgba(184,106,46,0.6); text-decoration: none; }
+  .footer a:hover { color: var(--rust); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+    .hero-cover-side {
+      height: 55vw;
+      max-height: 400px;
+    }
+    .hero-cover-overlay {
+      background: linear-gradient(to bottom, transparent 50%, var(--ink) 100%);
+    }
+    .hero-text-side {
+      padding: 3rem 1.8rem;
+    }
+    .author-inner {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .hero-title { font-size: 2.8rem; }
+    .hero-actions { max-width: 100%; }
+    .btn-primary, .btn-secondary { padding: 0.85rem 1.2rem; font-size: 0.76rem; }
+    .preface-text { font-size: 0.97rem; }
+    .chapter-row { grid-template-columns: 2rem 1fr; }
+    .chapter-page { display: none; }
+    .topbar { padding: 0 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── TOP BAR ── -->
+<nav class="topbar">
+  <a href="https://fabioscrive.github.io/blog/index.html" class="topbar-back">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Fabio Scrive
+  </a>
+  <div class="topbar-divider"></div>
+  <span class="topbar-site">fabioscrive.github.io</span>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+
+  <!-- Cover image left side -->
+  <div class="hero-cover-side">
+    <img src="Cover.jpg" alt="Copertina di Remigrazione — Fabio Bisesti" onerror="this.src='';this.style.background='#1a1612';">
+    <div class="hero-cover-overlay"></div>
+  </div>
+
+  <!-- Text right side -->
+  <div class="hero-text-side">
+    <div class="hero-eyebrow">Fabio Bisesti — 2026</div>
+    <h1 class="hero-title">Remigrazione</h1>
+    <p class="hero-subtitle">Il glitch temporale</p>
+
+    <blockquote class="hero-epigraph">
+      <p>«L'entropia dell'universo tende a un massimo.»</p>
+      <cite>— Rudolf Clausius</cite>
+    </blockquote>
+
+    <div class="hero-meta">
+      <span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M1 4h10" stroke="currentColor" stroke-width="1.2"/></svg>
+        Fantascienza
+      </span>
+      <span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v2.5l1.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        10 capitoli + epilogo
+      </span>
+      <span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1l1.5 3 3.5.5-2.5 2.5.5 3.5L6 8.75 3 11l.5-3.5L1 5l3.5-.5z" stroke="currentColor" stroke-width="1.1"/></svg>
+        Wattpad
+      </span>
+    </div>
+
+    <div class="hero-actions">
+      <a href="https://www.wattpad.com/myworks/412669324-remigrazione" target="_blank" rel="noopener" class="btn-primary">
+        <svg width="18" height="18" viewBox="0 0 50 50" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M25 2C12.3 2 2 12.3 2 25s10.3 23 23 23 23-10.3 23-23S37.7 2 25 2zm9.1 14.5l-4.6 17.2c-.2.7-.8 1.1-1.5 1.1s-1.3-.4-1.5-1.1l-2.5-9.4-2.5 9.4c-.2.7-.8 1.1-1.5 1.1s-1.3-.4-1.5-1.1l-4.6-17.2c-.2-.8.3-1.6 1.1-1.8.8-.2 1.6.3 1.8 1.1l3.2 12 2.5-9.5c.2-.7.8-1.1 1.5-1.1s1.3.4 1.5 1.1l2.5 9.5 3.2-12c.2-.8 1-.3 1.8-.1.8.2 1.3 1 1.1 1.8z"/>
+        </svg>
+        Leggi su Wattpad
+      </a>
+      <a href="https://www.wattpad.com/user/fabioscrive" target="_blank" rel="noopener" class="btn-secondary">
+        <svg width="16" height="16" viewBox="0 0 50 50" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M25 2C12.3 2 2 12.3 2 25s10.3 23 23 23 23-10.3 23-23S37.7 2 25 2zm9.1 14.5l-4.6 17.2c-.2.7-.8 1.1-1.5 1.1s-1.3-.4-1.5-1.1l-2.5-9.4-2.5 9.4c-.2.7-.8 1.1-1.5 1.1s-1.3-.4-1.5-1.1l-4.6-17.2c-.2-.8.3-1.6 1.1-1.8.8-.2 1.6.3 1.8 1.1l3.2 12 2.5-9.5c.2-.7.8-1.1 1.5-1.1s1.3.4 1.5 1.1l2.5 9.5 3.2-12c.2-.8 1-.3 1.8-.1.8.2 1.3 1 1.1 1.8z"/>
+        </svg>
+        Profilo Fabio Bisesti su Wattpad
+      </a>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── PREFAZIONE ── -->
+<section class="preface-section">
+  <div class="preface-inner">
+    <div class="section-label">Prefazione dell'autore</div>
+    <div class="preface-text">
+      <p>Questo racconto è nato da una domanda che non riuscivo a smettere di girare tra le mani: cosa succederebbe se qualcuno tentasse davvero di purificare la storia?</p>
+      <p>Non con le leggi, non con i confini, non con le deportazioni — strumenti già abbondantemente collaudati dal Novecento. Con la fisica. Con la precisione fredda di un'equazione, di un sistema, di un glitch calibrato al millesimo su una rete causale.</p>
+      <p>Ho cercato di scrivere questo racconto senza eroi e senza mostri, perché non credo che le catastrofi storiche nascano dall'incontro tra il bene e il male. Nascono dall'incontro tra la certezza assoluta di un politico e la curiosità irresistibile di uno scienziato. Nascono quando chi ha il potere di fare qualcosa smette di chiedersi se quella cosa vada fatta.</p>
+      <p>Il tessuto causale, nel racconto, alla fine ricomincia. Non perché qualcuno l'abbia salvato, ma perché l'entropia fa il suo lavoro — sempre, in qualsiasi timeline, con qualsiasi popolo. I fili si riformano. Le layline si intrecciano. La mescolanza ricomincia.</p>
+      <p>Non c'è consolazione in questo. C'è solo la legge.</p>
+    </div>
+    <div class="preface-signature">Fabio Bisesti — Napoli, 2026</div>
+  </div>
+</section>
+
+<!-- ── CAPITOLI ── -->
+<section class="chapters-section">
+  <div class="chapters-inner">
+    <div class="chapters-header">
+      <h2 class="chapters-title">Indice</h2>
+      <span class="chapters-count">10 CAPITOLI + EPILOGO</span>
+    </div>
+
+    <div class="chapter-row">
+      <span class="chapter-num">I</span>
+      <div class="chapter-name">La teoria di Arrigo</div>
+      <span class="chapter-page">cap. 1</span>
+    </div>
+    <div class="chapter-row">
+      <span class="chapter-num">II</span>
+      <div class="chapter-name">Viktor Han e la macchina del tempo</div>
+      <span class="chapter-page">cap. 2</span>
+    </div>
+    <div class="chapter-row">
+      <span class="chapter-num">III</span>
+      <div class="chapter-name">Le layline e i morti</div>
+      <span class="chapter-page">cap. 3</span>
+    </div>
+    <div class="chapter-row">
+      <span class="chapter-num">IV</span>
+      <div class="chapter-name">La primavera del prototipo</div>
+      <span class="chapter-page">cap. 4</span>
+    </div>
+    <div class="chapter-row">
+      <span class="chapter-num">V</span>
+      <div class="chapter-name">L'estate della conferenza stampa</div>
+      <span class="chapter-page">cap. 5</span>
+    </div>
+    <div class="chapter-row">
+      <span class="chapter-num">VI</span>
+      <div class="chapter-name">La notte prima</div>
+      <span class="chapter-page">cap. 6</span>
+    </div>
+    <div class="chapter-row">
+      <span class="chapter-num">VII</span>
+      <div class="chapter-name">Il glitch</div>
+      <span class="chapter-page">cap. 7</span>
+    </div>
+    <div class="chapter-row">
+      <span class="chapter-num">VIII</span>
+      <div class="chapter-name">Il collasso</div>
+      <span class="chapter-page">cap. 8</span>
+    </div>
+    <div class="chapter-row">
+      <span class="chapter-num">IX</span>
+      <div class="chapter-name">Il mondo dopo</div>
+      <span class="chapter-page">cap. 9</span>
+    </div>
+    <div class="chapter-row">
+      <span class="chapter-num">X</span>
+      <div class="chapter-name">L'entropia ha sempre ragione</div>
+      <span class="chapter-page">cap. 10</span>
+    </div>
+    <div class="chapter-row epilogue">
+      <span class="chapter-num">✦</span>
+      <div class="chapter-name">L'Italia non è mai esistita
+        <em>Epilogo</em>
+      </div>
+      <span class="chapter-page">epilogo</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── TEMA + AUTORE ── -->
+<section class="author-section">
+  <div class="author-inner">
+
+    <div class="theme-block">
+      <h2>L'entropia<br>non perdona</h2>
+      <p>Un fisico teorico. Una premier ossessionata dalla purezza etnica. Un ingegnere taiwanese che sa come modificare la rete causale del tempo.</p>
+      <p><em>Remigrazione</em> usa la seconda legge della termodinamica come metafora e come motore narrativo: ogni tentativo di invertire la mescolanza dei popoli porta con sé un costo entropico che il sistema deve pagare.</p>
+      <p>Un romanzo breve su cosa succederebbe se la storia fosse modificabile come un database — e su perché qualcuno dovrebbe comunque premere il tasto invio.</p>
+      <div class="theme-law">
+        <p>«Togliere quei fili dal tessuto non lo purifica. Lo straccia.»</p>
+        <cite>Fabio Bisesti</cite>
+      </div>
+    </div>
+
+    <div class="author-block">
+      <div class="section-label">L'autore</div>
+      <div class="author-name">Fabio Bisesti</div>
+      <div class="author-location">Napoli, Italia</div>
+      <p class="author-bio">Scrittore di narrativa letteraria e fantascienza. Ha già pubblicato <em>La cassaforte di pietra</em> su Amazon.</p>
+      <p class="author-bio">Negli ultimi anni ha lavorato al progetto I-Musa, una piattaforma di scrittura collaborativa uomo–AI, e a <em>Lei, è?</em>, un romanzo di finzione letteraria ambientato in un'Italia che scompare dai database internazionali.</p>
+      <div class="author-links">
+        <a href="https://fabioscrive.github.io/blog/index.html" class="author-link">Blog Fabio Scrive</a>
+        <a href="https://www.wattpad.com/user/fabioscrive" target="_blank" rel="noopener" class="author-link">Profilo Wattpad</a>
+        <a href="https://fabioscrive.github.io/imusa" target="_blank" rel="noopener" class="author-link">Piattaforma I-Musa</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer class="footer">
+  <p>
+    © 2026 Fabio Bisesti.<br>
+    Questo racconto è rilasciato con licenza <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">Creative Commons CC BY-NC-ND 4.0</a>.<br>
+    È consentita solo la condivisione integrale con attribuzione. Uso commerciale, modifiche e opere derivate non sono permessi.
+  </p>
+</footer>
+
+</body>
+</html>
